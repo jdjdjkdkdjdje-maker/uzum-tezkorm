@@ -32,8 +32,8 @@ jobs:
       # Repo faqat lib/ va konfiguratsiya fayllarini saqlaydi — android/gradlew
       # va ios/Runner.xcodeproj kabi avtogenerativ fayllar git'ga qo'shilmagan
       # bo'lsa, shu qadam ularni xavfsiz to'ldiradi (mavjud fayllarni buzmaydi).
-      - name: Native loyihalarni to'ldirish
-        run: flutter create --org uz.uzumtezkor --project-name uzum_tezkor_customer .
+      - name: Eski android papkasini tozalash
+        run: rm -rf android ios
 
       - name: Bog'liqliklarni o'rnatish
         run: flutter pub get
