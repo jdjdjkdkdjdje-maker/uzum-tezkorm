@@ -1,13 +1,11 @@
 name: Build APK
 
-# Har safar main branchga push qilinganda yoki Pull Request ochilganda ishga tushadi.
-# Natijada tayyor bo'lgan APK'ni "Actions" bo'limidan yuklab olish mumkin bo'ladi.
 on:
   push:
     branches: [main]
   pull_request:
     branches: [main]
-  workflow_dispatch: # GitHub saytida "Run workflow" tugmasi bilan qo'lda ham ishga tushirish mumkin
+  workflow_dispatch:
 
 jobs:
   build-apk:
@@ -28,28 +26,20 @@ jobs:
         with:
           channel: "stable"
 
-      - name: Eski android va ios papkalarini tozalash
-        run: rm -rf android ios
+      - name: Eski android, ios va kesh fayllarini tozalash
+        run: rm -rf android ios .dart_tool pubspec.lock .flutter-plugins .flutter-plugins-dependencies
 
       - name: Native loyihalarni qayta yaratish
         run: flutter create --org uz.uzumtezkor --project-name uzum_tezkor_customer .
 
       - name: Bog'liqliklarni o'rnatish
-        run: flutter pub get
+        run: |
+          flutter clean
+          flutter pub get
 
       - name: APK qurish (debug — kalit talab qilmaydi)
         env:
           GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
         run: |
           flutter build apk --debug \
-            --dart-define=API_BASE_URL=${{ vars.API_BASE_URL || 'https://api.uzumtezkor.uz' }} \
-            --dart-define=SOCKET_URL=${{ vars.SOCKET_URL || 'https://api.uzumtezkor.uz' }} \
-            --dart-define=GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} \
-            --dart-define=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
-
-      - name: APK'ni yuklab olish uchun saqlash
-        uses: actions/upload-artifact@v4
-        with:
-          name: uzum-tezkor-customer-debug-apk
-          path: build/app/outputs/flutter-apk/app-debug.apk
-          retention-days: 30
+            --dart-define=API_BASE_URL=${{ vars.API_BASE_URL || 'https://api.uzumtezkor.uz'
