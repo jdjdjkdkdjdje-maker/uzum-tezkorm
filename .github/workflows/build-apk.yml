@@ -26,7 +26,6 @@ jobs:
       - name: Flutter SDK o'rnatish
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.24.0"
           channel: "stable"
 
       - name: Eski android va ios papkalarini tozalash
