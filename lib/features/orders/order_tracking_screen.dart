@@ -74,7 +74,6 @@ class OrderTrackingScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    // Kuryer joylashuvi xaritada (10-band: jonli kuzatish).
                     if (order.status == OrderStatus.onTheWay || order.status == OrderStatus.pickedUp)
                       Container(
                         height: 220,
@@ -88,7 +87,7 @@ class OrderTrackingScreen extends ConsumerWidget {
                                   zoom: 14,
                                 ),
                                 markers: {
-                                  Marker(
+Marker(
                                     markerId: const MarkerId('courier'),
                                     position: LatLng(trackingState.courierLat!, trackingState.courierLng!),
                                     icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueOrange),
@@ -163,7 +162,7 @@ class OrderTrackingScreen extends ConsumerWidget {
                     const SizedBox(height: 8),
                     ...order.items.map((item) => Padding(
                           padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(
+child: Row(
                             children: [
                               Text('${item.quantity}x', style: const TextStyle(fontWeight: FontWeight.w600)),
                               const SizedBox(width: 8),
@@ -239,7 +238,7 @@ class OrderTrackingScreen extends ConsumerWidget {
               TextField(controller: commentController, maxLines: 3, decoration: const InputDecoration(hintText: 'Fikringiz (ixtiyoriy)')),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () async {
+onPressed: () async {
                   await ref.read(reviewRepositoryProvider).create(
                         restaurantId: order.restaurantId,
                         orderId: order.id,
