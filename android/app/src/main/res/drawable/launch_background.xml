@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Flutter yuklanayotgan paytda ko'rsatiladigan splash fon (ink rangida,
+     lib/features/splash/splash_screen.dart bilan bir xil #14161F). -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@color/splash_background" />
+</layer-list>

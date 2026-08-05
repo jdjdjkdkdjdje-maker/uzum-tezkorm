@@ -1,0 +1,35 @@
+# Flutter/Dart
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+*.g.dart
+*.freezed.dart
+
+# Machine-specific — hech qachon git'ga qo'shilmasin
+android/local.properties
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+
+# `flutter create .` orqali generatsiya qilinadigan lekin platformaga xos
+# bo'lgan fayllar (gradlew jar, xcodeproj) — CI'da avtomatik tiklanadi
+android/gradlew
+android/gradlew.bat
+android/gradle/wrapper/gradle-wrapper.jar
+ios/Runner.xcodeproj/
+ios/Runner.xcworkspace/
+ios/Pods/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# macOS
+.DS_Store
+
+# Muhit sirlari
+.env

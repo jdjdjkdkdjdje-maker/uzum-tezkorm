@@ -1,0 +1,82 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+    id "dev.flutter.flutter-gradle-plugin"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader("UTF-8") { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterVersionCode = localProperties.getProperty("flutter.versionCode") ?: "1"
+def flutterVersionName = localProperties.getProperty("flutter.versionName") ?: "1.0.0"
+
+android {
+    namespace "uz.uzumtezkor.customer"
+    compileSdk flutter.compileSdkVersion
+    ndkVersion flutter.ndkVersion
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+        // Java 8+ API desugaring — flutter_local_notifications/geolocator kabi
+        // paketlar eski Android versiyalarida ham ishlashi uchun kerak bo'lishi mumkin.
+        coreLibraryDesugaringEnabled true
+    }
+
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    sourceSets {
+        main.java.srcDirs += "src/main/kotlin"
+    }
+
+    defaultConfig {
+        applicationId "uz.uzumtezkor.customer"
+        // Google/Apple Sign-In va Google Maps SDK talabi:
+        minSdkVersion 23
+        targetSdkVersion flutter.targetSdkVersion
+        versionCode flutterVersionCode.toInteger()
+        versionName flutterVersionName
+        multiDexEnabled true
+
+        // AndroidManifest.xml ichida com.google.android.geo.API_KEY uchun
+        // ${GOOGLE_MAPS_API_KEY} manifest placeholder ishlatilgan. --dart-define
+        // faqat Dart tomoniga (String.fromEnvironment) qiymat beradi, Gradle
+        // manifest placeholder'ini avtomatik to'ldirmaydi — shuning uchun buni
+        // alohida belgilash SHART, aks holda manifest merge bosqichida build fail bo'ladi.
+        // Qiymat CI'da GOOGLE_MAPS_API_KEY environment o'zgaruvchisidan, lokalda esa
+        // local.properties'dagi GOOGLE_MAPS_API_KEY'dan olinadi.
+        def mapsApiKey = System.getenv("GOOGLE_MAPS_API_KEY") ?: localProperties.getProperty("GOOGLE_MAPS_API_KEY") ?: ""
+        manifestPlaceholders += [GOOGLE_MAPS_API_KEY: mapsApiKey]
+    }
+
+    buildTypes {
+        release {
+            // TODO: Play Store'ga chiqarishdan oldin o'z release keystore'ingiz bilan
+            // signingConfigs.release ni sozlang. Hozircha debug key bilan build bo'ladi.
+            signingConfig signingConfigs.debug
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
+        }
+        debug {
+            applicationIdSuffix ".debug"
+        }
+    }
+}
+
+flutter {
+    source "../.."
+}
+
+dependencies {
+    implementation "androidx.multidex:multidex:2.0.1"
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
+    implementation platform("com.google.firebase:firebase-bom:33.1.0")
+}

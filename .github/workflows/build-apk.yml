@@ -1,0 +1,58 @@
+name: Build APK
+
+# Har safar main branchga push qilinganda yoki Pull Request ochilganda ishga tushadi.
+# Natijada tayyor bo'lgan APK'ni "Actions" bo'limidan yuklab olish mumkin bo'ladi.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # GitHub saytida "Run workflow" tugmasi bilan qo'lda ham ishga tushirish mumkin
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Kodni olish
+        uses: actions/checkout@v4
+
+      - name: Java o'rnatish (Gradle uchun kerak)
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: "17"
+
+      - name: Flutter SDK o'rnatish
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.24.0" # kerak bo'lsa loyihangizdagi versiyaga moslang
+          channel: "stable"
+
+      # Repo faqat lib/ va konfiguratsiya fayllarini saqlaydi — android/gradlew
+      # va ios/Runner.xcodeproj kabi avtogenerativ fayllar git'ga qo'shilmagan
+      # bo'lsa, shu qadam ularni xavfsiz to'ldiradi (mavjud fayllarni buzmaydi).
+      - name: Native loyihalarni to'ldirish
+        run: flutter create --org uz.uzumtezkor --project-name uzum_tezkor_customer .
+
+      - name: Bog'liqliklarni o'rnatish
+        run: flutter pub get
+
+      - name: APK qurish (debug — kalit talab qilmaydi)
+        env:
+          # build.gradle'dagi manifestPlaceholders shu environment
+          # o'zgaruvchisini System.getenv() orqali o'qiydi.
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
+        run: |
+          flutter build apk --debug \
+            --dart-define=API_BASE_URL=${{ vars.API_BASE_URL || 'https://api.uzumtezkor.uz' }} \
+            --dart-define=SOCKET_URL=${{ vars.SOCKET_URL || 'https://api.uzumtezkor.uz' }} \
+            --dart-define=GOOGLE_MAPS_API_KEY=${{ secrets.GOOGLE_MAPS_API_KEY }} \
+            --dart-define=GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}
+
+      - name: APK'ni yuklab olish uchun saqlash
+        uses: actions/upload-artifact@v4
+        with:
+          name: uzum-tezkor-customer-debug-apk
+          path: build/app/outputs/flutter-apk/app-debug.apk
+          retention-days: 30
