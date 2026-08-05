@@ -42,4 +42,4 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
 }
 
 final localeProvider = StateNotifierProvider<LocaleNotifier, Locale>((ref) => LocaleNotifier());
-final themeModeProvider = StateNotifierProvider<ThemeModeNotifier, ThemeMode>((ref) => ThemeModeNotifier());
+final themeModeProvider = StateNotifierProvider
